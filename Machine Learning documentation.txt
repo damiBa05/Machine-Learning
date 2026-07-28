@@ -1,0 +1,30 @@
+Every RL setup has the same skeleton:
+
+Agent — the thing making decisions
+Environment — the world it interacts with
+State — what the agent currently observes
+Action — what it can do
+Reward — a number telling it how good that action was
+Policy — the agent's strategy for picking actions, which it updates based on reward
+
+The easiest possible project: Q-learning in a grid world
+
+This is the classic "hello world" of RL, and it's small enough to build in an afternoon with zero libraries — just arrays and loops, which suits your C++ background well.
+
+Setup:
+
+A small grid, say 5x5, represented as a 2D array
+Agent starts at one corner, goal is at the opposite corner
+Some cells are walls/obstacles
+Actions: up, down, left, right
+
+Reward function (dumb and simple, on purpose):
+
+Reach the goal: +100
+Hit a wall or go out of bounds: -10
+Every normal step: -1 (this pushes it to find the shortest path, not just any path)
+
+The learning mechanism — a Q-table:
+A 2D table where rows are states (grid positions) and columns are actions. Each cell holds "how good is this action from this state," and you update it after every move using the Q-learning update rule:
+
+Q(state, action) = Q(state, action) + learning_rate * (reward + discount * max(Q(next_state, all_actions)) - Q(state, action))
