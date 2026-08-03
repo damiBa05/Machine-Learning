@@ -32,6 +32,6 @@ void Actions::move(Agent& agent, Environment& env, int dx, int dy) {
         agent.addScore(100);
         agent.setDone(true);
     } else {
-        agent.addScore(-1);
+        agent.addScore(0);
     }
 }
