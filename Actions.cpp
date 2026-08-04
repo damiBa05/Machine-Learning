@@ -32,6 +32,14 @@ void Actions::move(Agent& agent, Environment& env, int dx, int dy) {
         agent.addScore(100);
         agent.setDone(true);
     } else {
-        agent.addScore(0);
+        agent.addScore(-1);
     }
+}
+
+int Actions::applySlip(int intendedAction, int numActions, double slipProbability) {
+    double randNum = static_cast<double>(rand()) / RAND_MAX;
+    if (randNum < slipProbability) {
+        return rand() % numActions;
+    }
+    return intendedAction;
 }

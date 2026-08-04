@@ -28,3 +28,6 @@ The learning mechanism — a Q-table:
 A 2D table where rows are states (grid positions) and columns are actions. Each cell holds "how good is this action from this state," and you update it after every move using the Q-learning update rule:
 
 Q(state, action) = Q(state, action) + learning_rate * (reward + discount * max(Q(next_state, all_actions)) - Q(state, action))
+
+V1 It could find the exit of the maze without knowing the exit, size, start, ending, and walls had to be inputed manually. Used a qtable to decide the next actions
+V2 Maze can be generated randomly (function to verify if maze is possible), now the agent has the probability to do an action, yet another action is done alterating its path to look up the exit,
