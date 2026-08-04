@@ -93,7 +93,7 @@ int main() {
     // --- 1. Build the world ---
     const int width = 10;
     const int height = 10;
-    const double wallDensity = 0.5; // 50% of the grid will be walls
+    const double wallDensity = 0.25; // 50% of the grid will be walls
     Environment env(width, height);
     MazeConfig mazeConfig = generateSolvableMaze(env, width, height, wallDensity);
 
