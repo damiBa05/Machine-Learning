@@ -6,11 +6,18 @@
 #include <cstdlib>
 #include <ctime>
 
+struct Turn {
+    int state;
+    int action;
+};
+
 Environment env(3, 3);              // Create a 3x3 Tic Tac Toe board
 Agent agentX(1, 0, PlayerMark::X);  // Create an agent for player X
 Agent agentO(2, 0, PlayerMark::O);  // Create an agent for player O
-QTable qtableX(3, 3);               // X's memory
-QTable qtableO(3, 3);               // O's memory
+QTable qtableX(19683, 9);           // X's memory
+QTable qtableO(19683, 9);           // O's memory
+std::vector<Turn> historyX;         // History of turns for agent X
+std::vector<Turn> historyO;         // History of turns for agent O
 Actions actions;                    // Actions for the game
 
 const double alpha = 0.1;           // learning rate
@@ -31,8 +38,10 @@ std::vector<int> boardToCells(const Environment& env) {
 }
 
 void playGame() {
+    historyX.clear();
+    historyO.clear();
     env.cleanBoard(); // Reset the board for a new game
-    int i =  1 + (rand() % 2); // Randomly choose which agent starts
+    int i =  1 + (std::rand() % 2); // Randomly choose which agent starts
     while (env.getGameResult() == GameResult::InProgress) {
         std::vector<int> validActions = actions.getValidActions(env);
         std::vector<int> currentCells = boardToCells(env);
@@ -43,6 +52,7 @@ void playGame() {
             int x = action / env.getWidth();
             int y = action % env.getWidth();
             actions.place(agentX, env, x, y);
+            historyX.push_back({state, action});
         } else {
             // Agent O's turn
             int state = qtableO.stateIndex(currentCells);
@@ -50,6 +60,7 @@ void playGame() {
             int x = action / env.getWidth();
             int y = action % env.getWidth();
             actions.place(agentO, env, x, y);
+            historyO.push_back({state, action});
         }
         ++i;
     }
@@ -62,6 +73,31 @@ int main() {
     for (int episode = 0; episode < maxEpisodes; ++episode) {
         playGame();
         env.printBoard();
+        GameResult result = env.getGameResult();
+        double rewardX = 0.0, rewardO = 0.0;
+        if (result == GameResult::XWins) {
+            rewardX = 1.0;
+            rewardO = -1.0;
+        } else if (result == GameResult::OWins) {
+            rewardX = -1.0;
+            rewardO = 1.0;
+        }
+        for (size_t i = 0; i < historyX.size(); ++i) {
+            int state = historyX[i].state;
+            int action = historyX[i].action;
+            double reward = (i + 1 == historyX.size()) ? rewardX : 0.0;
+            int nextState = (i + 1 < historyX.size()) ? historyX[i + 1].state : state;
+
+            qtableX.update(state, action, reward, nextState, alpha, gamma);
+        }
+        for (size_t i = 0; i < historyO.size(); ++i) {
+            int state = historyO[i].state;
+            int action = historyO[i].action;
+            double reward = (i + 1 == historyO.size()) ? rewardO : 0.0;
+            int nextState = (i + 1 < historyO.size()) ? historyO[i + 1].state : state;
+
+            qtableO.update(state, action, reward, nextState, alpha, gamma);
+        }
         epsilon = std::max(epsilon * epsilonDecay, epsilonMin);
     }
     return 0;
