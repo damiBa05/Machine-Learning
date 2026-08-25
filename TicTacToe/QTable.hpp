@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include <algorithm>
+#include <cmath>
+#include <random>
 
 class QTable
 {
