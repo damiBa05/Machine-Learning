@@ -69,7 +69,7 @@ void playGame() {
 
 int main() {
     std::srand(std::time(nullptr));
-
+    int winsX = 0, winsO = 0, draws = 0;
     for (int episode = 0; episode < maxEpisodes; ++episode) {
         playGame();
         env.printBoard();
@@ -78,9 +78,13 @@ int main() {
         if (result == GameResult::XWins) {
             rewardX = 1.0;
             rewardO = -1.0;
+            ++winsX;
         } else if (result == GameResult::OWins) {
             rewardX = -1.0;
             rewardO = 1.0;
+            ++winsO;
+        } else {
+            ++draws;
         }
         for (size_t i = 0; i < historyX.size(); ++i) {
             int state = historyX[i].state;
@@ -100,5 +104,9 @@ int main() {
         }
         epsilon = std::max(epsilon * epsilonDecay, epsilonMin);
     }
+    std::cout << "Training completed after " << maxEpisodes << " episodes." << std::endl;
+    std::cout << "Wins for X: " << winsX << std::endl;
+    std::cout << "Wins for O: " << winsO << std::endl;
+    std::cout << "Draws: " << draws << std::endl;
     return 0;
 }
