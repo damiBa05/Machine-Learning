@@ -25,7 +25,7 @@ const double gamma = 0.9;           // discount factor
 double epsilon = 1.0;               // exploration rate
 const double epsilonDecay = 0.9995; // slower than the grid world - see note below
 const double epsilonMin = 0.05;     // min exploration rate - see note below
-const int maxEpisodes = 50000;       // also bigger than before - see note below
+const int maxEpisodes = 20000;       // also bigger than before - see note below
 
 std::vector<int> boardToCells(const Environment& env) {
     std::vector<int> cells;
