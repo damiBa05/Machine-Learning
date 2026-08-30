@@ -5,12 +5,15 @@
 class DQN
 {
 private:
-    std::vector<std::vector<double>> weights;
-    std::vector<double> bias;
+    std::vector<std::vector<double>> weightsOutput;
+    std::vector<double> biasOutput;
+    std::vector<std::vector<double>> weightsLayer1;
+    std::vector<double> biasLayer1;
     int numActions;
     int numCells;
+    int numHidden1;
 public:
-    DQN(int actions, int cells);
+    DQN(int actions, int cells, int numHidden1);
     double getQValue(int action, const std::vector<int>& cells) const;
     void update(int action, const std::vector<int>& cells, double reward,
         const std::vector<int>& nextCells, bool isTerminal,

@@ -16,9 +16,9 @@ Environment env(3, 3);              // Create a 3x3 Tic Tac Toe board
 Agent agentX(1, 0, PlayerMark::X);  // Create an agent for player X
 Agent agentO(2, 0, PlayerMark::O);  // Create an agent for player O
 QTable qtableX(19683, 9);           // X's memory
-DQN DQNTableX(9, 9);                // X's memory as DQN
+DQN DQNTableX(9, 9, 13);                // X's memory as DQN
 QTable qtableO(19683, 9);           // O's memory
-DQN DQNTableO(9, 9);                // O's memory as DQN
+DQN DQNTableO(9, 9, 13);                // O's memory as DQN
 std::vector<Turn> historyX;         // History of turns for agent X
 std::vector<Turn> historyO;         // History of turns for agent O
 Actions actions;                    // Actions for the game
