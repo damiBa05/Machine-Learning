@@ -1,13 +1,14 @@
 #include "Agent.hpp"
 #include "Environment.hpp"
 #include "QTable.hpp"
+#include "DQN.hpp"
 #include "Actions.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 
 struct Turn {
-    int state;
+    std::vector<int> cells;
     int action;
 };
 
@@ -15,7 +16,9 @@ Environment env(3, 3);              // Create a 3x3 Tic Tac Toe board
 Agent agentX(1, 0, PlayerMark::X);  // Create an agent for player X
 Agent agentO(2, 0, PlayerMark::O);  // Create an agent for player O
 QTable qtableX(19683, 9);           // X's memory
+DQN DQNTableX(9, 9);                // X's memory as DQN
 QTable qtableO(19683, 9);           // O's memory
+DQN DQNTableO(9, 9);                // O's memory as DQN
 std::vector<Turn> historyX;         // History of turns for agent X
 std::vector<Turn> historyO;         // History of turns for agent O
 Actions actions;                    // Actions for the game
@@ -25,7 +28,7 @@ const double gamma = 0.9;           // discount factor
 double epsilon = 1.0;               // exploration rate
 const double epsilonDecay = 0.9995; // slower than the grid world - see note below
 const double epsilonMin = 0.05;     // min exploration rate - see note below
-const int maxEpisodes = 20000;       // also bigger than before - see note below
+const int maxEpisodes = 50000;       // also bigger than before - see note below
 
 std::vector<int> boardToCells(const Environment& env) {
     std::vector<int> cells;
@@ -47,12 +50,11 @@ void playGame() {
         std::vector<int> currentCells = boardToCells(env);
         if ((i % 2) == 1) {
             // Agent X's turn
-            int state = qtableX.stateIndex(currentCells);
-            int action = qtableX.selectAction(state, epsilon, validActions);
+            int action = DQNTableX.selectAction(currentCells, epsilon, validActions);
             int x = action / env.getWidth();
             int y = action % env.getWidth();
             actions.place(agentX, env, x, y);
-            historyX.push_back({state, action});
+            historyX.push_back({currentCells, action});
         } else {
             // Agent O's turn
             int state = qtableO.stateIndex(currentCells);
@@ -60,7 +62,7 @@ void playGame() {
             int x = action / env.getWidth();
             int y = action % env.getWidth();
             actions.place(agentO, env, x, y);
-            historyO.push_back({state, action});
+            historyO.push_back({currentCells, action});
         }
         ++i;
     }
@@ -74,6 +76,7 @@ int main() {
         playGame();
         env.printBoard();
         GameResult result = env.getGameResult();
+        std::vector<int> currentCells = boardToCells(env);
         double rewardX = 0.0, rewardO = 0.0;
         if (result == GameResult::XWins) {
             rewardX = 1.0;
@@ -87,18 +90,21 @@ int main() {
             ++draws;
         }
         for (size_t i = 0; i < historyX.size(); ++i) {
-            int state = historyX[i].state;
             int action = historyX[i].action;
             double reward = (i + 1 == historyX.size()) ? rewardX : 0.0;
-            int nextState = (i + 1 < historyX.size()) ? historyX[i + 1].state : state;
+            bool isTerminal = (i + 1 == historyX.size());
+            const std::vector<int>& cells = historyX[i].cells;
+            const std::vector<int>& nextCells = (i + 1 < historyX.size()) ? historyX[i + 1].cells : cells;
 
-            qtableX.update(state, action, reward, nextState, alpha, gamma);
+            DQNTableX.update(action, cells, reward, nextCells, isTerminal, alpha, gamma);
         }
         for (size_t i = 0; i < historyO.size(); ++i) {
-            int state = historyO[i].state;
             int action = historyO[i].action;
             double reward = (i + 1 == historyO.size()) ? rewardO : 0.0;
-            int nextState = (i + 1 < historyO.size()) ? historyO[i + 1].state : state;
+            int state = qtableO.stateIndex(historyO[i].cells);
+            int nextState = (i + 1 < historyO.size())
+                                ? qtableO.stateIndex(historyO[i + 1].cells)
+                                : state;
 
             qtableO.update(state, action, reward, nextState, alpha, gamma);
         }

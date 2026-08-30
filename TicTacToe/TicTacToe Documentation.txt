@@ -1,0 +1,14 @@
+This is the code for a ML algorithm that will play tictactoe against itself,
+It was created using C++ 17, and VSCode as the IDE.
+It contains a header per archive aside from the main.cpp to create each class and
+be able to make changes and good connectivity between everything.
+File include the following and will change as the program grows
+    1. Actions.hpp/cpp for the choosing of suitabe actions during each ML turn to play
+    2. Agent.hpp/cpp This is the agent in charge of keep track of itself
+    3. DQN.hpp/cpp Responsible of creating a single layer neurornal connection for decisions(on the works
+        to make it a multiple layer)
+    4. Environment.hpp/cpp Responsible of the creation of the playing board and the status of the board
+    5. main.cpp Main program to run all the archives together and create a .exe
+    6. Makefile (On the works)
+    7.QTable.hpp/cpp QTable that is used as a baseline memory creation, and it is now used to test against the 
+        DQN format. 

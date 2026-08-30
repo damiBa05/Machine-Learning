@@ -13,22 +13,18 @@ double DQN::getQValue(int action, const std::vector<int>& cells) const{
     return q;
 }
 
-void DQN::setWeight(int action, int cellIndex, double value){
-
-}
-
-void DQN::setBias(int action, double value){
-
-}
-
 void DQN::update(int action, const std::vector<int>& cells, double reward,
-    const std::vector<int>& nextCells, double learningRate, double discountFactor) {
+    const std::vector<int>& nextCells, bool isTerminal,
+    double learningRate, double discountFactor) {
 
-    double maxNextQValue = getQValue(0, nextCells);
-    for (int a = 1; a < numActions; ++a) {
-        double q = getQValue(a, nextCells);
-        if (q > maxNextQValue) {
-            maxNextQValue = q;
+    double maxNextQValue = 0.0;
+    if (!isTerminal) {
+        maxNextQValue = getQValue(0, nextCells);
+        for (int a = 1; a < numActions; ++a) {
+            double q = getQValue(a, nextCells);
+            if (q > maxNextQValue) {
+                maxNextQValue = q;
+            }
         }
     }
 
@@ -43,9 +39,32 @@ void DQN::update(int action, const std::vector<int>& cells, double reward,
 
 int DQN::selectAction(const std::vector<int>& cells, double epsilon,
     const std::vector<int>& validActions) const{
-
+    // Epsilon-greedy action selection
+    if (static_cast<double>(rand()) / RAND_MAX < epsilon) {
+        // Explore: choose a random valid action
+        int randomIndex = rand() % validActions.size();
+        return validActions[randomIndex];
+    }else{
+        int bestAction = validActions[0];
+        double bestQValue = getQValue(bestAction, cells);
+        for (int action : validActions){
+            double q = getQValue(action, cells);;
+            if (q > bestQValue){
+                bestQValue = q;
+                bestAction = action;
+            }
+        }
+        return bestAction;
+    }
 }
 
 void DQN::reset(){
-
+    for(double& b : bias){
+        b = 0.0;
+    }
+    for (std::vector<double>& weight : weights){
+        for (double& value : weight){
+            value = 0.0;
+        }
+    }
 }
