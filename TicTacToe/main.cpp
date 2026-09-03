@@ -3,6 +3,7 @@
 #include "QTable.hpp"
 #include "DQN.hpp"
 #include "Actions.hpp"
+#include "Experience.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -16,9 +17,12 @@ Environment env(3, 3);              // Create a 3x3 Tic Tac Toe board
 Agent agentX(1, 0, PlayerMark::X);  // Create an agent for player X
 Agent agentO(2, 0, PlayerMark::O);  // Create an agent for player O
 QTable qtableX(19683, 9);           // X's memory
-DQN DQNTableX(9, 9, 200);                // X's memory as DQN
+DQN DQNTableX(9, 9, 200);           // X's memory as DQN
+DQN targetX(9, 9, 200);             // X's target network     
+targetX.copyFrom(DQNTableX);        // Copy weights from DQNTableX to targetX
+ReplayBuffer experienceBufferX(10000);// Experience replay buffer for DQN X
 QTable qtableO(19683, 9);           // O's memory
-DQN DQNTableO(9, 9, 13);                // O's memory as DQN
+DQN DQNTableO(9, 9, 13);            // O's memory as DQN
 std::vector<Turn> historyX;         // History of turns for agent X
 std::vector<Turn> historyO;         // History of turns for agent O
 Actions actions;                    // Actions for the game
@@ -71,8 +75,11 @@ void playGame() {
 
 int main() {
     std::srand(std::time(nullptr));
-    int winsX = 0, winsO = 0, draws = 0;
+    int winsX = 0, winsO = 0, draws = 0, targetSyncFrequency = 500;
     for (int episode = 0; episode < maxEpisodes; ++episode) {
+        if (episode % targetSyncFrequency == 0) {
+            targetX.copyFrom(DQNTableX);
+        }
         playGame();
         env.printBoard();
         GameResult result = env.getGameResult();
@@ -95,8 +102,7 @@ int main() {
             bool isTerminal = (i + 1 == historyX.size());
             const std::vector<int>& cells = historyX[i].cells;
             const std::vector<int>& nextCells = (i + 1 < historyX.size()) ? historyX[i + 1].cells : cells;
-
-            DQNTableX.update(action, cells, reward, nextCells, isTerminal, alpha, gamma);
+            experienceBufferX.addExperience({cells, action, reward, nextCells, isTerminal});
         }
         for (size_t i = 0; i < historyO.size(); ++i) {
             int action = historyO[i].action;

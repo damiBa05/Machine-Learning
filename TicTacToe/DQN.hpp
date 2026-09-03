@@ -18,8 +18,9 @@ public:
     double getQValue(int action, const std::vector<int>& cells) const;
     void update(int action, const std::vector<int>& cells, double reward,
         const std::vector<int>& nextCells, bool isTerminal,
-        double learningRate, double discountFactor);
+        double learningRate, double discountFactor, const DQN& targetNetwork);
     int selectAction(const std::vector<int>& cells, double epsilon,
          const std::vector<int>& validActions) const;
     void reset();
+    void copyFrom(const DQN& source);
 };

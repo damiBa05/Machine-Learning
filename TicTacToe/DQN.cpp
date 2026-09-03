@@ -35,7 +35,7 @@ double DQN::getQValue(int action, const std::vector<int>& cells) const{
 
 void DQN::update(int action, const std::vector<int>& cells, double reward,
     const std::vector<int>& nextCells, bool isTerminal,
-    double learningRate, double discountFactor) {
+    double learningRate, double discountFactor, const DQN& targetNetwork) {
 
     // Step 1: creation of hiddenOutput
     std::vector<double> hiddenOutput(numHidden1, 0.0);
@@ -49,9 +49,9 @@ void DQN::update(int action, const std::vector<int>& cells, double reward,
 
     double maxNextQValue = 0.0;
     if (!isTerminal) {
-        maxNextQValue = getQValue(0, nextCells);
+        maxNextQValue = targetNetwork.getQValue(0, nextCells);
         for (int a = 1; a < numActions; ++a) {
-            double q = getQValue(a, nextCells);
+            double q = targetNetwork.getQValue(a, nextCells);
             if (q > maxNextQValue) {
                 maxNextQValue = q;
             }
@@ -116,4 +116,11 @@ void DQN::reset(){
             value = 0.0;
         }
     }
+}
+
+void DQN::copyFrom(const DQN& source) {
+    weightsOutput = source.weightsOutput;
+    biasOutput = source.biasOutput;
+    weightsLayer1 = source.weightsLayer1;
+    biasLayer1 = source.biasLayer1;
 }
