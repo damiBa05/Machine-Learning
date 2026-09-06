@@ -12,3 +12,8 @@ File include the following and will change as the program grows
     6. Makefile (On the works)
     7.QTable.hpp/cpp QTable that is used as a baseline memory creation, and it is now used to test against the 
         DQN format. 
+
+Discoveries after the implementation of DQN with hidden layers are that
+    1. More weights make the learning worse
+    2. A slower learning rate doesnt help to make the learning better
+    3. The combination of the 3 makes the learning exponentailly better
