@@ -19,7 +19,6 @@ Agent agentO(2, 0, PlayerMark::O);  // Create an agent for player O
 QTable qtableX(19683, 9);           // X's memory
 DQN DQNTableX(9, 9, 200);           // X's memory as DQN
 DQN targetX(9, 9, 200);             // X's target network     
-targetX.copyFrom(DQNTableX);        // Copy weights from DQNTableX to targetX
 ReplayBuffer experienceBufferX(10000);// Experience replay buffer for DQN X
 QTable qtableO(19683, 9);           // O's memory
 DQN DQNTableO(9, 9, 13);            // O's memory as DQN
@@ -74,6 +73,7 @@ void playGame() {
 
 
 int main() {
+    targetX.copyFrom(DQNTableX);        // Copy weights from DQNTableX to targetX
     std::srand(std::time(nullptr));
     int winsX = 0, winsO = 0, draws = 0, targetSyncFrequency = 500;
     for (int episode = 0; episode < maxEpisodes; ++episode) {
@@ -81,7 +81,6 @@ int main() {
             targetX.copyFrom(DQNTableX);
         }
         playGame();
-        env.printBoard();
         GameResult result = env.getGameResult();
         std::vector<int> currentCells = boardToCells(env);
         double rewardX = 0.0, rewardO = 0.0;
@@ -104,6 +103,10 @@ int main() {
             const std::vector<int>& nextCells = (i + 1 < historyX.size()) ? historyX[i + 1].cells : cells;
             experienceBufferX.addExperience({cells, action, reward, nextCells, isTerminal});
         }
+        std::vector<Experience> batch = experienceBufferX.sample(64);
+        for (const Experience& e : batch) {
+            DQNTableX.update(e.action, e.cells, e.reward, e.nextCells, e.isTerminal, alpha, gamma, targetX);
+        }
         for (size_t i = 0; i < historyO.size(); ++i) {
             int action = historyO[i].action;
             double reward = (i + 1 == historyO.size()) ? rewardO : 0.0;
@@ -115,6 +118,11 @@ int main() {
             qtableO.update(state, action, reward, nextState, alpha, gamma);
         }
         epsilon = std::max(epsilon * epsilonDecay, epsilonMin);
+        if (episode % 1000 == 0) {
+        std::cout << "Episode " << episode << " | X: " << winsX
+            << " O: " << winsO << " draws: " << draws
+            << " | epsilon: " << epsilon << std::endl;
+        }
     }
     std::cout << "Training completed after " << maxEpisodes << " episodes." << std::endl;
     std::cout << "Wins for X: " << winsX << std::endl;

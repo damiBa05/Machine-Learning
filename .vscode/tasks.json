@@ -13,6 +13,7 @@
                 "${fileDirname}\\Environment.cpp",
                 "${fileDirname}\\QTable.cpp",
                 "${fileDirname}\\DQN.cpp",
+                "${fileDirname}\\Experience.cpp",
                 "-o",
                 "${fileDirname}\\program.exe"
             ],
