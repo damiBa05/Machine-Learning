@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <array>
 #include <algorithm>
 #include <cmath>
 #include <random>
@@ -17,8 +18,8 @@ public:
     void updateQValue(int row, int col, double value);                  //Updates the QValue of a specific
     void update(int state, int action, double reward, int nextState,    //Updates the QValue based on the Q-learning formula
         double learningRate, double discountFactor);
-    int stateIndex(const std::vector<int>& cells) const;                //Gives the position for the QTable
+    int stateIndex(const std::array<int, 9>& cells) const;              //Gives the position for the QTable
     int selectAction(int state, double epsilon,                         //Selects the action to do
-        const std::vector<int>& validActions) const;                   
+        const std::array<int, 9>& validActions) const;                   
     void reset();                        
 };

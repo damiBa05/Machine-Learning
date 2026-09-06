@@ -53,11 +53,11 @@ BoardState Environment::getCell(int x, int y) const {
     return BoardState::Empty; // Return Empty for out-of-bounds access
 }
 
-int Environment::getWidth() const {
+int Environment::getWidth() const noexcept {
     return width;
 }
 
-int Environment::getHeight() const {
+int Environment::getHeight() const noexcept {
     return height;
 }
 

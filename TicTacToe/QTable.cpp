@@ -52,17 +52,17 @@ void QTable::reset() {
             qValues[row][col] = 0.0;
 }
 
-int QTable::stateIndex(const std::vector<int>& cells) const {
+int QTable::stateIndex(const std::array<int, 9>& cells) const {
     int index = 0;
     int power = 1;
-    for (int i = 0; i < static_cast<int>(cells.size()); ++i) {
+    for (int i = 0; i < 9; ++i) {
         index += cells[i] * power;
         power *= 3; // build up 3^i by repeated multiplication, one step per iteration
     }
     return index;
 }
 
-int QTable::selectAction(int state, double epsilon, const std::vector<int>& validActions) const {
+int QTable::selectAction(int state, double epsilon, const std::array<int, 9>& validActions) const {
     // Epsilon-greedy action selection
     if (static_cast<double>(rand()) / RAND_MAX < epsilon) {
         // Explore: choose a random valid action

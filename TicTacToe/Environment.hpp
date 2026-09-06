@@ -22,8 +22,8 @@ public:
     void cleanBoard();                              //Reset of the board
     GameResult getGameResult() const;               //To get the result of the game
     BoardState getCell(int x, int y) const;         //To get the state of a single cell
-    int getWidth() const;                           //To get the width of the board
-    int getHeight() const;                          //To get the height of the board
+    int getWidth() const noexcept;                           //To get the width of the board
+    int getHeight() const noexcept;                          //To get the height of the board
     bool isValidPlacement(int x, int y) const;      //To check if a placement is valid
     void printBoard() const;                          //To print the board
 };

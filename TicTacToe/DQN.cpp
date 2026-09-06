@@ -13,7 +13,7 @@ DQN::DQN(int actions, int cells, int cellsHidden1) : numActions(actions),
     biasLayer1.resize(numHidden1, 0.0);
 }
 
-double DQN::getQValue(int action, const std::vector<int>& cells) const{
+double DQN::getQValue(int action, const std::array<int, 9>& cells) const{
     //Hidden layer logic
     // Step 1: cells -> hidden layer, ReLU applied to each hidden neuron
     std::vector<double> hiddenOutput(numHidden1, 0.0);
@@ -33,8 +33,8 @@ double DQN::getQValue(int action, const std::vector<int>& cells) const{
     return q;
 }
 
-void DQN::update(int action, const std::vector<int>& cells, double reward,
-    const std::vector<int>& nextCells, bool isTerminal,
+void DQN::update(int action, const std::array<int, 9>& cells, double reward,
+    const std::array<int, 9>& nextCells, bool isTerminal,
     double learningRate, double discountFactor, const DQN& targetNetwork) {
 
     // Step 1: creation of hiddenOutput
@@ -86,8 +86,8 @@ void DQN::update(int action, const std::vector<int>& cells, double reward,
     }
 }
 
-int DQN::selectAction(const std::vector<int>& cells, double epsilon,
-    const std::vector<int>& validActions) const{
+int DQN::selectAction(const std::array<int, 9>& cells, double epsilon,
+    const std::array<int, 9>& validActions) const{
     // Epsilon-greedy action selection
     if (static_cast<double>(rand()) / RAND_MAX < epsilon) {
         // Explore: choose a random valid action

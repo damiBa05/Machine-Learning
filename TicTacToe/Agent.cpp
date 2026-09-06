@@ -7,7 +7,7 @@ void Agent::setScore(int newScore) {
 void Agent::addScore(int delta) {
     score += delta;
 }
-int Agent::getScore() {
+int Agent::getScore() noexcept {
     return score;
 }
 bool Agent::setGame() {
@@ -21,6 +21,6 @@ void Agent::reset() {
     gameState = false;
 }
 
-PlayerMark Agent::getMark() const {
+PlayerMark Agent::getMark() const noexcept {
     return mark;
 }

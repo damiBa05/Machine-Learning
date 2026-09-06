@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <array>
 #include <cstdlib>
 #include <random>
 
@@ -15,12 +16,12 @@ private:
     int numHidden1;
 public:
     DQN(int actions, int cells, int numHidden1);
-    double getQValue(int action, const std::vector<int>& cells) const;
-    void update(int action, const std::vector<int>& cells, double reward,
-        const std::vector<int>& nextCells, bool isTerminal,
+    double getQValue(int action, const std::array<int, 9>& cells) const;
+    void update(int action, const std::array<int, 9>& cells, double reward,
+        const std::array<int, 9>& nextCells, bool isTerminal,
         double learningRate, double discountFactor, const DQN& targetNetwork);
-    int selectAction(const std::vector<int>& cells, double epsilon,
-         const std::vector<int>& validActions) const;
+    int selectAction(const std::array<int, 9>& cells, double epsilon,
+         const std::array<int, 9>& validActions) const;
     void reset();
     void copyFrom(const DQN& source);
 };

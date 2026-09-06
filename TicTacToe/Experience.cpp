@@ -2,11 +2,11 @@
 
 ReplayBuffer::ReplayBuffer(int cap) : capacity(cap){}
 
-void ReplayBuffer::addExperience(const Experience& experience){
+void ReplayBuffer::addExperience(Experience experience){
     if (buffer.size() >= capacity) {
         buffer.erase(buffer.begin()); // Remove the oldest experience
     }
-    buffer.push_back(experience);
+    buffer.push_back(std::move(experience)); // Add the new experience
 }
 
 std::vector<Experience> ReplayBuffer::sample(int batchSize) const {

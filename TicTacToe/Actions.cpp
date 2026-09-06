@@ -15,12 +15,13 @@ void Actions::place(Agent& agent, Environment& env, int x, int y) {
         }
     }
 }
-std::vector<int> Actions::getValidActions(const Environment& env) {
-    std::vector<int> validActions;
+std::array<int, 9> Actions::getValidActions(const Environment& env) {
+    std::array<int, 9> validActions;
+    int index = 0;
     for (int x = 0; x < env.getWidth(); ++x) {
         for (int y = 0; y < env.getHeight(); ++y) {
             if (isValidPlacement(x, y, env)) {
-                validActions.push_back(x * env.getHeight() + y); // Store as a single integer
+                validActions[index++] = x * env.getHeight() + y; // Store as a single integer
             }
         }
     }
