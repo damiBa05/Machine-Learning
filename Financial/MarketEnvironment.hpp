@@ -2,6 +2,10 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 class MarketEnvironment {
 private:
