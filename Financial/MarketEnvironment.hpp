@@ -9,6 +9,7 @@
 
 class MarketEnvironment {
 private:
+    int rowCount;
     int daysLimit;                            // The number of days to consider for the market environment
     std::vector<double> closePrices;          // Vector to store close prices for each day
     std::vector<double> openPrices;           // Vector to store open prices for each day
