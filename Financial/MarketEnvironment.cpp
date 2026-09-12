@@ -5,9 +5,10 @@ MarketEnvironment::MarketEnvironment(const std::string& filePath, int daysLimit)
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + filePath);
     }
+    int rowCount = 1;
     std::string line;
+    std::getline(file, line); // Skip the header line
     while (std::getline(file, line)) {
-        rowCount++;
         std::stringstream ss(line);
         std::string word;
         double close, open, high, low, ret, volume;
@@ -42,8 +43,13 @@ MarketEnvironment::MarketEnvironment(const std::string& filePath, int daysLimit)
             }
             i++;
         }
-        ret = (closePrices[rowCount] - closePrices[rowCount - 1]) / closePrices[rowCount - 1]; // Calculate return
-        returns.push_back(ret);
+        if (rowCount > 1) {
+        ret = (closePrices[rowCount - 1] - closePrices[rowCount - 2]) / closePrices[rowCount - 2];
+        } else {
+            ret = 0.0; // first row has no prior day to compare against
+        }
+    returns.push_back(ret);
+    rowCount++;
     }   
 }
 
@@ -87,8 +93,8 @@ std::vector<double> MarketEnvironment::getStateWindowReturns(int day, int window
         throw std::out_of_range("Invalid day index or window size");
     }
     std::vector<double> windowReturns;
-    for (int i = day; i < day + windowSize && i < returns.size(); ++i) {
-        windowReturns.push_back(returns[i]);
+    for (int i = day - windowSize + 1; i <= day; ++i) {
+        windowReturns.push_back(i >= 0 ? returns[i] : 0.0);
     }
     return windowReturns;
 }
